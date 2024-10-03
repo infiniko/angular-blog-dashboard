@@ -24,7 +24,7 @@ export class NewPostComponent {
       ['link', 'image']                       // Link and image insertion
     ]
   };
-  eplaceholder: string = "content";
+  eplaceholder: string = "Enter your content here";
   ngOnInit(){
     this.categoryService.loadData().subscribe( val => {
       this.categories = val;
