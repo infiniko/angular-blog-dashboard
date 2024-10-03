@@ -1,0 +1,67 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <h3 class="text-theme-primary">All new post</h3>
+            <p class="mb-5">You may publish your posts here.</p>
+        </div>
+    </div>
+
+    <form>
+        <div class="row">
+            <div class="col-md-7">
+                <div class="card shadow-effect">
+                    <div class="card-body">
+                        <div class="form-group mb-3">
+                            <label for="">Title</label>
+                            <input type="text" name="" class="form-control" (keyup) = "onTitleChange($event)"/>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="">Permalink</label>
+                            <input type="text" name="" class="form-control" placeholder="" name="permalink" [(ngModel)]="permalink" readonly disabled/>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="">Excerpt</label>
+                            <textarea cols="30" rows="10" class="form-control" ></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="form-group mb-3">
+                            <label for="">Please select a post category</label>
+                            <select name="" id="" class="form-control">
+                                <option value="" disabled>Please add a category</option>
+                                <option *ngFor="let cty of categories" value="cty.category">{{cty.category}}</option>
+                            </select>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="">Upload image</label>
+                            <input type="file" class="form-control" accept="image/*" (change)="showPreview($event)"/>
+                            <img [src]="imgSrc" class="form-control img-fluid img-preview mt-4">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row my-5">
+            <div class="col-md-12">
+                <div class="shadow-effect">
+                    <div class="">
+                        <div>
+                            <label for="" class="mb-2">Content</label>
+                            <div id="editor-container">
+                            <quill-editor [placeholder]="eplaceholder" [theme]="'snow'" [bounds]="'editor-container'"></quill-editor>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 text-center mt-5">
+                <button class="btn btn-info text-white bg-theme me-5">Save post</button>
+                <button class="btn btn-warning" routerLink="/posts">Back to posts</button>
+            </div>
+        </div>
+    </form>
+</div>
