@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms'; 
+import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms'; 
 import { CategoriesService } from '../../services/categories.service';
 
 
@@ -14,16 +14,20 @@ export class NewPostComponent {
   imgSrc: any = '/assets/placeholder.png';
   selectedImg:any;
   categories: Array<any>;
-  constructor(private categoryService: CategoriesService){}
+  postForm: FormGroup;
 
-  editorModules = {
-    toolbar: [
-      ['bold', 'italic', 'underline'],        // Toggle buttons
-      [{ 'header': 1 }, { 'header': 2 }],     // Custom dropdown
-      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-      ['link', 'image']                       // Link and image insertion
-    ]
-  };
+  constructor(private categoryService: CategoriesService, private fb: FormBuilder){
+    this.postForm = this.fb.group({
+      title: ['',[Validators.required, Validators.minLength(5)]],
+      permaLink: [{value:'',disabled:true}],
+      excerpt: ['',[Validators.required, Validators.minLength(10)]],
+      category: ['',Validators.required],
+      postImg: ['',Validators.required],
+      content: ['',Validators.required]
+    })
+
+  }
+
   eplaceholder: string = "Enter your content here";
   ngOnInit(){
     this.categoryService.loadData().subscribe( val => {
@@ -31,6 +35,9 @@ export class NewPostComponent {
     })
   }
 
+    get fc(){
+      return this.postForm.controls;    
+    }
   onTitleChange($event){
     let title = $event.target.value;
     this.permalink = title.replace(/\s/g,'-');
@@ -44,5 +51,9 @@ export class NewPostComponent {
     }
     reader.readAsDataURL($event.target.files[0]);
     this.selectedImg = $event.target.files[0];
+  }
+
+  onSumbitForm(){
+    
   }
 }

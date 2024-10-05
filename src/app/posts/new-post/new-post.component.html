@@ -6,23 +6,41 @@
         </div>
     </div>
 
-    <form>
+    <form [formGroup]="postForm">
         <div class="row">
             <div class="col-md-7">
                 <div class="card shadow-effect">
                     <div class="card-body">
                         <div class="form-group mb-3">
                             <label for="">Title</label>
-                            <input type="text" name="" class="form-control" (keyup)="onTitleChange($event)" />
+                            <input type="text" name="" class="form-control" (keyup)="onTitleChange($event)"
+                                formControlName="title"
+                                [ngClass]="{'is-invalid': fc.title.touched && fc.title.invalid}" />
+                            <div *ngIf="fc.title.errors?.required">
+                                <div class="alert alert-danger" *ngIf="fc.title.touched && fc.title.invalid">Title is
+                                    required. </div>
+                            </div>
+                            <div *ngIf="fc.title.errors?.minlength">
+                                <div class="alert alert-danger" *ngIf="fc.title.touched && fc.title.invalid">Title must
+                                    be 5 characters long. </div>
+                            </div>
                         </div>
                         <div class="form-group mb-3">
                             <label for="">Permalink</label>
                             <input type="text" name="" class="form-control" placeholder="" name="permalink"
-                                [(ngModel)]="permalink" readonly disabled />
+                                [(ngModel)]="permalink" formControlName="permaLink" />
                         </div>
                         <div class="form-group mb-3">
                             <label for="">Excerpt</label>
-                            <textarea cols="30" rows="10" class="form-control"></textarea>
+                            <textarea cols="30" rows="10" class="form-control" formControlName="excerpt" [ngClass]="{'is-invalid': fc.excerpt.touched && fc.excerpt.invalid}"></textarea>
+                            <div *ngIf="fc.excerpt.errors?.required">
+                                <div class="alert alert-danger" *ngIf="fc.excerpt.touched && fc.excerpt.invalid">
+                                    Required field. </div>
+                            </div>
+                            <div *ngIf="fc.excerpt.errors?.minlength">
+                                <div class="alert alert-danger" *ngIf="fc.excerpt.touched && fc.excerpt.invalid">Must be
+                                    10 characters long. </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -32,15 +50,24 @@
                     <div class="card-body">
                         <div class="form-group mb-3">
                             <label for="">Please select a post category</label>
-                            <select name="" id="" class="form-control">
+                            <select name="" id="" class="form-control" formControlName="category">
                                 <option value="" disabled>Please add a category</option>
                                 <option *ngFor="let cty of categories" value="cty.category">{{cty.category}}</option>
                             </select>
+                            <div *ngIf="fc.category.errors?.required">
+                                <div class="alert alert-danger" *ngIf="fc.category.touched && fc.category.invalid">
+                                    Select required field. </div>
+                            </div>
                         </div>
                         <div class="form-group mb-3">
                             <label for="">Upload image</label>
-                            <input type="file" class="form-control" accept="image/*" (change)="showPreview($event)" />
+                            <input type="file" class="form-control" accept="image/*" (change)="showPreview($event)"
+                                formControlName="postImg" />
                             <img [src]="imgSrc" class="form-control img-fluid img-preview mt-4">
+                            <div *ngIf="fc.postImg.errors?.required">
+                                <div class="alert alert-danger" *ngIf="fc.postImg.touched && fc.postImg.invalid">Image
+                                    is required. </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -52,13 +79,18 @@
                     <div class="card-body">
                         <div class="container">
                             <quill-editor [placeholder]="eplaceholder" [theme]="'snow'"
-                                [styles]="{'width': '100%', 'height': '100px',  'overflow-wrap': 'break-word', 'word-break': 'break-all'}"></quill-editor>
+                                [styles]="{'width': '100%', 'height': '100px',  'overflow-wrap': 'break-word', 'word-break': 'break-all'}"
+                                formControlName="content" ></quill-editor>
+                            <div *ngIf="fc.content.errors?.required">
+                                <div class="alert alert-danger" *ngIf="fc.content.touched && fc.content.invalid">Content
+                                    is required. </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="col-md-12 text-center mt-5">
-                <button class="btn btn-info text-white bg-theme me-5">Save post</button>
+                <button class="btn btn-info text-white bg-theme me-5" [disabled]="postForm.invalid">Save post</button>
                 <button class="btn btn-warning" routerLink="/posts">Back to posts</button>
             </div>
         </div>
