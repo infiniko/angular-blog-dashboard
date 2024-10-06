@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms'; 
 import { CategoriesService } from '../../services/categories.service';
+import { Post } from '../../models/post';
+import { PostsService } from '../../services/posts.service';
 
 
 @Component({
@@ -16,10 +18,10 @@ export class NewPostComponent {
   categories: Array<any>;
   postForm: FormGroup;
 
-  constructor(private categoryService: CategoriesService, private fb: FormBuilder){
+  constructor(private categoryService: CategoriesService, private fb: FormBuilder, private postsService: PostsService){
     this.postForm = this.fb.group({
       title: ['',[Validators.required, Validators.minLength(5)]],
-      permaLink: [{value:'',disabled:true}],
+      permalink: [{value:'',disabled:true}],
       excerpt: ['',[Validators.required, Validators.minLength(10)]],
       category: ['',Validators.required],
       postImg: ['',Validators.required],
@@ -53,7 +55,27 @@ export class NewPostComponent {
     this.selectedImg = $event.target.files[0];
   }
 
-  onSumbitForm(){
-    
+  onSubmitForm(){
+
+    let splitValue = this.postForm.value.category.split('--');
+    const postData: Post = {
+      title: this.postForm.value.title,
+      permalink: this.permalink,
+      category: {
+        categoryId: splitValue[1],
+        category: splitValue[0]
+      },
+      postImgPath: '',
+      excerpt: this.postForm.value.excerpt,
+      content: this.postForm.value.content,
+      isFeatured: false,
+      views: 0,
+      status: 'NEW',
+      createdAt: new Date()
+    }
+
+    console.log(postData);
+
+    this.postsService.uploadFile(this.selectedImg);
   }
 }

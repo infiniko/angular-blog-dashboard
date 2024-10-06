@@ -6,7 +6,7 @@
         </div>
     </div>
 
-    <form [formGroup]="postForm">
+    <form [formGroup]="postForm" (ngSubmit)="onSubmitForm()">
         <div class="row">
             <div class="col-md-7">
                 <div class="card shadow-effect">
@@ -27,8 +27,8 @@
                         </div>
                         <div class="form-group mb-3">
                             <label for="">Permalink</label>
-                            <input type="text" name="" class="form-control" placeholder="" name="permalink"
-                                [(ngModel)]="permalink" formControlName="permaLink" />
+                            <input type="text" name="" class="form-control" name="permalink"
+                                [(ngModel)]="permalink" formControlName="permalink" />
                         </div>
                         <div class="form-group mb-3">
                             <label for="">Excerpt</label>
@@ -52,7 +52,7 @@
                             <label for="">Please select a post category</label>
                             <select name="" id="" class="form-control" formControlName="category">
                                 <option value="" disabled>Please add a category</option>
-                                <option *ngFor="let cty of categories" value="cty.category">{{cty.category}}</option>
+                                <option *ngFor="let cty of categories" value="{{cty.category}}--{{cty.id}}">{{cty.category}}</option>
                             </select>
                             <div *ngIf="fc.category.errors?.required">
                                 <div class="alert alert-danger" *ngIf="fc.category.touched && fc.category.invalid">
@@ -90,7 +90,7 @@
                 </div>
             </div>
             <div class="col-md-12 text-center mt-5">
-                <button class="btn btn-info text-white bg-theme me-5" [disabled]="postForm.invalid">Save post</button>
+                <button class="btn btn-info text-white bg-theme me-5" [disabled]="postForm.invalid" type="submit">Save post</button>
                 <button class="btn btn-warning" routerLink="/posts">Back to posts</button>
             </div>
         </div>
