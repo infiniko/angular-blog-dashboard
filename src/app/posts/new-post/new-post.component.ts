@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms'; 
+import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { CategoriesService } from '../../services/categories.service';
 import { Post } from '../../models/post';
 import { PostsService } from '../../services/posts.service';
+import { ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -14,38 +15,55 @@ export class NewPostComponent {
 
   permalink: string = '';
   imgSrc: any = '/assets/placeholder.png';
-  selectedImg:any;
+  selectedImg: any;
   categories: Array<any>;
   postForm: FormGroup;
+  editPost: any;
+  formStatus: string = 'Add new';
 
-  constructor(private categoryService: CategoriesService, private fb: FormBuilder, private postsService: PostsService){
-    this.postForm = this.fb.group({
-      title: ['',[Validators.required, Validators.minLength(5)]],
-      permalink: [{value:'',disabled:true}],
-      excerpt: ['',[Validators.required, Validators.minLength(10)]],
-      category: ['',Validators.required],
-      postImg: ['',Validators.required],
-      content: ['',Validators.required]
+  constructor(
+    private categoryService: CategoriesService,
+    private fb: FormBuilder,
+    private postsService: PostsService,
+    private route: ActivatedRoute
+  ) {
+    this.route.queryParams.subscribe((val) => {
+
+      this.postsService.loadOneDoc(val.id).subscribe(post => {
+
+        this.editPost = post;
+        
+        this.postForm = this.fb.group({
+          title: [this.editPost.title, [Validators.required, Validators.minLength(5)]],
+          permalink: [{ value: this.editPost.permalink, disabled: true }],
+          excerpt: [this.editPost.excerpt, [Validators.required, Validators.minLength(10)]],
+          category: [`${this.editPost.category.category}--${this.editPost.category.categoryId}` , Validators.required],
+          postImg: ['', Validators.required],
+          content: [this.editPost.content, Validators.required]
+        })
+
+        this.imgSrc = this.editPost.postImgPath;
+        this.formStatus = 'Edit';
+      })
     })
-
   }
 
   eplaceholder: string = "Enter your content here";
-  ngOnInit(){
-    this.categoryService.loadData().subscribe( val => {
+  ngOnInit() {
+    this.categoryService.loadData().subscribe(val => {
       this.categories = val;
     })
   }
 
-    get fc(){
-      return this.postForm.controls;    
-    }
-  onTitleChange($event){
+  get fc() {
+    return this.postForm.controls;
+  }
+  onTitleChange($event) {
     let title = $event.target.value;
-    this.permalink = title.replace(/\s/g,'-');
+    this.permalink = title.replace(/\s/g, '-');
   }
 
-  showPreview($event: any){
+  showPreview($event: any) {
     // read image through upload
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -55,9 +73,10 @@ export class NewPostComponent {
     this.selectedImg = $event.target.files[0];
   }
 
-  onSubmitForm(){
+  onSubmitForm() {
 
     let splitValue = this.postForm.value.category.split('--');
+
     const postData: Post = {
       title: this.postForm.value.title,
       permalink: this.permalink,
@@ -74,8 +93,8 @@ export class NewPostComponent {
       createdAt: new Date()
     }
 
-    console.log(postData);
-
-    this.postsService.uploadFile(this.selectedImg);
+    this.postsService.uploadFile(this.selectedImg, postData);
+    this.postForm.reset();
+    this.imgSrc = '/assets/placeholder.png';
   }
 }

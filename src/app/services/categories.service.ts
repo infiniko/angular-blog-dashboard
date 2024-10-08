@@ -22,18 +22,8 @@ export class CategoriesService {
 
   loadData(){
     const x = collection(this.firestore, 'categories');
-    const anything:any = collectionData(x, { idField: 'id' }) as Observable<any>;
-    console.log(anything);
-    // return anything.pipe(
-    //   map((actions:any) => {
-    //     return actions.map( (a:any) => {
-    //       const data = a.payload.doc.data();
-    //       const id = a.payload.doc.id;
-    //       return {id, data};
-    //     })
-    //   })
-    // )
-    return anything;
+    const categoryCollection:any = collectionData(x, { idField: 'id' }) as Observable<any>;
+    return categoryCollection;
   }
 
   updateData(id:string,editData:object){
