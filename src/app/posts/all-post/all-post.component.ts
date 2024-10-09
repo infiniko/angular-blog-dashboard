@@ -17,4 +17,15 @@ export class AllPostComponent {
       this.postArray = val;
     })
   }
+
+  onDelete(postImgPath: any, id: any){
+    this.postsService.deleteFile(id,postImgPath);
+  }
+
+  onFeatured(id:any, isfeatured:boolean){
+    const featuredData = {
+      isFeatured: !isfeatured
+    }
+    this.postsService.markFeatured(id, featuredData);
+  }
 }

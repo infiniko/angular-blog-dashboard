@@ -1,6 +1,6 @@
-import { inject, Injectable } from '@angular/core';
-import { addDoc, collection, collectionData, doc, docData, Firestore, updateDoc } from '@angular/fire/firestore';
-import { getDownloadURL, ref, Storage, uploadBytesResumable } from '@angular/fire/storage';
+import { inject, Injectable, ɵDeferBlockConfig } from '@angular/core';
+import { addDoc, collection, collectionData, deleteDoc, doc, docData, Firestore, updateDoc } from '@angular/fire/firestore';
+import { deleteObject, getDownloadURL, ref, Storage, uploadBytesResumable, } from '@angular/fire/storage';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Observable } from 'rxjs';
@@ -13,7 +13,7 @@ export class PostsService {
   firestore = inject(Firestore);
   constructor(private toastr: ToastrService, private router: Router) { }
 
-  uploadFile(file: any, postData: any) {
+  uploadFile(file: any, postData: any, formStatus: string, id:any) {
     const filePath = `postIMG/img_${Date.now()}`;
     if (file) {
       const storageRef = ref(this.storage, filePath);
@@ -21,7 +21,13 @@ export class PostsService {
         console.log("img uploaded");
         getDownloadURL(storageRef).then((url) => {
           postData.postImgPath = url;
-          this.saveData(postData);
+          
+          if(formStatus == 'Edit'){
+            this.updateData(id, postData);
+          }
+          else{
+            this.saveData(postData);
+          } 
         })
       })
     }
@@ -47,10 +53,38 @@ export class PostsService {
     return docData(docRef);
   }
 
-  updateData(id, postData){
+  updateData(id:any, postData:any){
     const docRef = doc(this.firestore, `posts/${id}`);
     updateDoc(docRef,postData).then( docRef => {
       this.toastr.success('Post updated successfully!');
+      this.router.navigate(['/posts']);
+    });
+  }
+
+  deleteData(id:any){
+    const docRef = doc(this.firestore, `posts/${id}`);
+    deleteDoc(docRef).then( docRef => {
+      this.toastr.success('Entry deleted!');
+    })
+  }
+
+  deleteFile(id:any,fileUrl: string) {
+    const fileRef = ref(this.storage, fileUrl);
+    deleteObject(fileRef)
+      .then(() => {
+        this.deleteData(id);
+      })
+      .catch((error) => {
+        console.error('Error deleting file:', error);
+      });
+  }
+
+  markFeatured(id: any, featuredData:any){
+    const docRef = doc(this.firestore, `posts/${id}`);
+    updateDoc(docRef,featuredData).then( docRef => {
+      this.toastr.success('Featured status updated!');
     });
   }
 }
+
+

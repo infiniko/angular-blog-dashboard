@@ -20,6 +20,7 @@ export class NewPostComponent {
   postForm: FormGroup;
   editPost: any;
   formStatus: string = 'Add new';
+  docId: any;
 
   constructor(
     private categoryService: CategoriesService,
@@ -29,22 +30,38 @@ export class NewPostComponent {
   ) {
     this.route.queryParams.subscribe((val) => {
 
-      this.postsService.loadOneDoc(val.id).subscribe(post => {
+      this.docId = val.id;
 
-        this.editPost = post;
-        
-        this.postForm = this.fb.group({
-          title: [this.editPost.title, [Validators.required, Validators.minLength(5)]],
-          permalink: [{ value: this.editPost.permalink, disabled: true }],
-          excerpt: [this.editPost.excerpt, [Validators.required, Validators.minLength(10)]],
-          category: [`${this.editPost.category.category}--${this.editPost.category.categoryId}` , Validators.required],
-          postImg: ['', Validators.required],
-          content: [this.editPost.content, Validators.required]
+      ///Edit
+      if (val.id) {
+        this.postsService.loadOneDoc(val.id).subscribe(post => {
+
+          this.editPost = post;
+          this.postForm = this.fb.group({
+            title: [this.editPost.title, [Validators.required, Validators.minLength(5)]],
+            permalink: [{ value: this.editPost.permalink, disabled: true }],
+            excerpt: [this.editPost.excerpt, [Validators.required, Validators.minLength(10)]],
+            category: [`${this.editPost.category.category}--${this.editPost.category.categoryId}`, Validators.required],
+            postImg: ['', Validators.required],
+            content: [this.editPost.content, Validators.required]
+          })
+
+          this.imgSrc = this.editPost.postImgPath;
+          this.formStatus = 'Edit';
         })
+      }
+      else {
+        /// Add 
+        this.postForm = this.fb.group({
+          title: ['', [Validators.required, Validators.minLength(5)]],
+          permalink: [{ value: '', disabled: true }],
+          excerpt: ['', [Validators.required, Validators.minLength(10)]],
+          category: [``, Validators.required],
+          postImg: ['', Validators.required],
+          content: ['', Validators.required]
+        })
+      }
 
-        this.imgSrc = this.editPost.postImgPath;
-        this.formStatus = 'Edit';
-      })
     })
   }
 
@@ -58,6 +75,8 @@ export class NewPostComponent {
   get fc() {
     return this.postForm.controls;
   }
+
+  //// creating permalink without spaces
   onTitleChange($event) {
     let title = $event.target.value;
     this.permalink = title.replace(/\s/g, '-');
@@ -76,10 +95,9 @@ export class NewPostComponent {
   onSubmitForm() {
 
     let splitValue = this.postForm.value.category.split('--');
-
     const postData: Post = {
       title: this.postForm.value.title,
-      permalink: this.permalink,
+      permalink: this.postForm.value.permalink,
       category: {
         categoryId: splitValue[1],
         category: splitValue[0]
@@ -93,7 +111,7 @@ export class NewPostComponent {
       createdAt: new Date()
     }
 
-    this.postsService.uploadFile(this.selectedImg, postData);
+    this.postsService.uploadFile(this.selectedImg, postData, this.formStatus, this.docId);
     this.postForm.reset();
     this.imgSrc = '/assets/placeholder.png';
   }
