@@ -2,4 +2,8 @@
     <div class="container justify-content-center">
         <a href="#" class="head-logo">INFI-BLOG</a>
     </div>
+    <div class="container justify-content-center" *ngIf="isLoggedIn$ | async">
+        <h6 class="me-3">{{userEmail}}</h6>
+        <button class="btn  btn-info bg-secondary-theme text-theme-primary" (click)="onLogout()"><i class="fa-solid fa-user-large-slash"></i></button>
+    </div>
 </header>
