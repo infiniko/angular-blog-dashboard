@@ -20,6 +20,7 @@ import { AllPostComponent } from './posts/all-post/all-post.component';
 import { NewPostComponent } from './posts/new-post/new-post.component';
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { LoginComponent } from './auth/login/login.component';
+import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,7 @@ import { LoginComponent } from './auth/login/login.component';
     QuillModule.forRoot()
   ],
   providers: [
-    provideFirebaseApp(() => initializeApp({ "projectId": "infi-blog", "appId": "1:490064474978:web:4e50c3377db890a156723b", "storageBucket": "infi-blog.appspot.com", "apiKey": "AIzaSyDZcUCBIcLN6If3tv52VFzOojj3lrVDRgs", "authDomain": "infi-blog.firebaseapp.com", "messagingSenderId": "490064474978" })),
+    provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
     provideStorage(() => getStorage()),

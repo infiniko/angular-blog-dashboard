@@ -29,9 +29,7 @@ export class NewPostComponent {
     private route: ActivatedRoute
   ) {
     this.route.queryParams.subscribe((val) => {
-
       this.docId = val.id;
-
       ///Edit
       if (val.id) {
         this.postsService.loadOneDoc(val.id).subscribe(post => {
@@ -39,7 +37,7 @@ export class NewPostComponent {
           this.editPost = post;
           this.postForm = this.fb.group({
             title: [this.editPost.title, [Validators.required, Validators.minLength(5)]],
-            permalink: [{ value: this.editPost.permalink, disabled: true }],
+            permalink: [{value:this.editPost.permalink, disabled:true}],
             excerpt: [this.editPost.excerpt, [Validators.required, Validators.minLength(10)]],
             category: [`${this.editPost.category.category}--${this.editPost.category.categoryId}`, Validators.required],
             postImg: ['', Validators.required],
@@ -51,10 +49,10 @@ export class NewPostComponent {
         })
       }
       else {
-        /// Add 
+        // Add 
         this.postForm = this.fb.group({
           title: ['', [Validators.required, Validators.minLength(5)]],
-          permalink: [{ value: '', disabled: true }],
+          permalink: [{value:this.permalink, disabled:true}],
           excerpt: ['', [Validators.required, Validators.minLength(10)]],
           category: [``, Validators.required],
           postImg: ['', Validators.required],
@@ -70,6 +68,8 @@ export class NewPostComponent {
     this.categoryService.loadData().subscribe(val => {
       this.categories = val;
     })
+
+    
   }
 
   get fc() {
@@ -80,6 +80,9 @@ export class NewPostComponent {
   onTitleChange($event) {
     let title = $event.target.value;
     this.permalink = title.replace(/\s/g, '-');
+    this.postForm.patchValue({
+      permalink: this.permalink
+    });
   }
 
   showPreview($event: any) {
@@ -97,7 +100,7 @@ export class NewPostComponent {
     let splitValue = this.postForm.value.category.split('--');
     const postData: Post = {
       title: this.postForm.value.title,
-      permalink: this.postForm.value.permalink,
+      permalink: this.postForm.getRawValue().permalink,
       category: {
         categoryId: splitValue[1],
         category: splitValue[0]
